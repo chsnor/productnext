@@ -6,7 +6,6 @@ import {
   defaultQuery,
 } from "src/lib/products";
 import { useForm } from "react-hook-form";
-
 type ProductSearchFormProps = {
   onSearch: (query: SearchQuery) => Promise<void>;
 };
@@ -15,7 +14,8 @@ export default function ProductSearchForm({
 }: ProductSearchFormProps) {
   const {
     register,
-    formState: { errors },
+    handleSubmit,
+    formState: { errors, isSubmitting },
   } = useForm<SearchQuery>({
     // เติม: ตัวเชื:อมที:ทําให้ React Hook Form ตรวจข้อมูลด้วย Zod Schema
     resolver: zodResolver(SearchQuerySchema),
@@ -23,7 +23,7 @@ export default function ProductSearchForm({
     defaultValues: defaultQuery,
   });
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSearch)} noValidate>
       <label htmlFor="limit">จํานวนรายการ</label>
       <input
         id="limit"
@@ -44,7 +44,9 @@ export default function ProductSearchForm({
           </option>
         ))}
       </select>
-      <button type="submit">ค้นหา</button>
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "กำลังค้นหา" : "ค้นหา"}
+      </button>
     </form>
   );
 }

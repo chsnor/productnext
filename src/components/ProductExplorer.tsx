@@ -1,12 +1,20 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { defaultQuery, fetchProducts } from "src/lib/products";
-import type { Product, ProductList, SearchQuery } from "src/lib/products";
-type LoadState = "idle" | "loading" | "error" | "ready";
+import type {
+  Product,
+  ProductDraft,
+  ProductList,
+  SearchQuery,
+} from "src/lib/products";
+import ProductSearchForm from "./ProductSearchForm";
+import ProductForm from "./ProductForm";
+type LoadState = "loading" | "error" | "ready";
+
 export default function ProductExplorer() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [status, setStatus] = useState<LoadState>("idle");
+  const [status, setStatus] = useState<LoadState>("loading");
   const [errorMessage, setErrorMessage] = useState("");
   function showResult(list: ProductList) {
     setProducts(list.products);
@@ -30,8 +38,20 @@ export default function ProductExplorer() {
       showError(error);
     }
   }
+  function saveProduct(draft: ProductDraft) {
+    // เติม: เครื่องหมายที่คัดลอกสมาชิกเดิมทั้งหมดของ Array
+    console.log("draft", draft);
+    setProducts([...products, { ...draft, id: Date.now() }]);
+  }
+    useEffect(() => {
+    fetchProducts(defaultQuery).then(showResult).catch(showError);
+    // เติม: สิ่งที่กำหนดให้ทำงานเพียงครั้งเดียวตอนแสดงผลครั้งแรก
+  }, []);
+
   return (
     <main>
+      <ProductForm editing={null} onSave={saveProduct} onCancel={() => {}} />
+      <ProductSearchForm onSearch={loadProducts} />
       <h1>รายการสินค้า</h1>
       <button
         type="button"
