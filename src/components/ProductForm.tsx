@@ -31,6 +31,7 @@ export default function ProductForm({
         }
       : { title: "", price: undefined, stock: undefined },
   });
+
   function saveProduct(values: ProductDraft) {
     onSave(values);
     reset();
@@ -54,7 +55,6 @@ export default function ProductForm({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* ชื่อสินค้า */}
         <div className="col-span-full">
           <label htmlFor="title" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
             ชื่อสินค้า
@@ -66,7 +66,7 @@ export default function ProductForm({
             aria-invalid={!!errors.title}
             aria-describedby="title-error"
             placeholder="กรอกชื่อสินค้า..."
-            className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 text-sm transition"
           />
           {errors.title && (
             <span id="title-error" role="alert" className="text-red-500 dark:text-red-400 text-xs mt-1.5 block">
@@ -75,7 +75,7 @@ export default function ProductForm({
           )}
         </div>
 
-        {/* ราคา */}
+
         <div>
           <label htmlFor="price" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
             ราคา
@@ -89,7 +89,7 @@ export default function ProductForm({
             aria-invalid={!!errors.price}
             aria-describedby="price-error"
             placeholder="0.00"
-            className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 text-sm transition"
           />
           {errors.price && (
             <span id="price-error" role="alert" className="text-red-500 dark:text-red-400 text-xs mt-1.5 block">
@@ -98,7 +98,7 @@ export default function ProductForm({
           )}
         </div>
 
-        {/* จำนวนคงเหลือ */}
+
         <div>
           <label htmlFor="stock" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
             จำนวนคงเหลือ
@@ -111,7 +111,7 @@ export default function ProductForm({
             aria-invalid={!!errors.stock}
             aria-describedby="stock-error"
             placeholder="0"
-            className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 text-sm transition"
           />
           {errors.stock && (
             <span id="stock-error" role="alert" className="text-red-500 dark:text-red-400 text-xs mt-1.5 block">
@@ -120,7 +120,7 @@ export default function ProductForm({
           )}
         </div>
 
-        {/* หมวดหมู่ */}
+
         <div className="col-span-full">
           <label htmlFor="category" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
             หมวดหมู่
@@ -131,7 +131,7 @@ export default function ProductForm({
             {...register("category")}
             aria-invalid={!!errors.category}
             aria-describedby="category-error"
-            className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 text-sm transition"
           >
             <option value="" className="text-zinc-400 dark:text-zinc-500">กรุณาเลือกหมวดหมู่</option>
             {CATEGORIES.map((name) => (

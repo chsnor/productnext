@@ -10,7 +10,15 @@ import type {
 } from "src/lib/products";
 import ProductSearchForm from "./ProductSearchForm";
 import ProductForm from "./ProductForm";
-import { Package, RefreshCw, Loader2, AlertCircle } from "lucide-react";
+import {
+  Package,
+  RefreshCw,
+  Loader2,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Pencil,
+} from "lucide-react";
 
 type LoadState = "loading" | "error" | "ready";
 
@@ -18,9 +26,13 @@ export default function ProductExplorer() {
   const [products, setProducts] = useState<Product[]>([]);
   const [status, setStatus] = useState<LoadState>("loading");
   const [errorMessage, setErrorMessage] = useState("");
+  const [query, setQuery] = useState<SearchQuery>(defaultQuery);
+  const [total, setTotal] = useState(0);
+  const [editing, setEditing] = useState<Product | null>(null);
 
   function showResult(list: ProductList) {
     setProducts(list.products);
+    setTotal(list.total);
     setErrorMessage("");
     setStatus("ready");
   }
@@ -32,18 +44,36 @@ export default function ProductExplorer() {
     setStatus("error");
   }
 
-  async function loadProducts(query: SearchQuery) {
+  async function loadProducts(nextQuery: SearchQuery) {
+    setQuery(nextQuery);
     setStatus("loading");
     setErrorMessage("");
     try {
-      showResult(await fetchProducts(query));
+      showResult(await fetchProducts(nextQuery));
     } catch (error) {
       showError(error);
     }
   }
 
   function saveProduct(draft: ProductDraft) {
-    setProducts([...products, { ...draft, id: Date.now() }]);
+    if (editing) {
+      setProducts((prev) =>
+        prev.map((item) =>
+          item.id === editing.id ? { ...draft, id: editing.id } : item,
+        ),
+      );
+      setEditing(null);
+    } else {
+      setProducts((prev) => [...prev, { ...draft, id: Date.now() }]);
+    }
+  }
+
+  const limit = query.limit;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const currentPage = Math.min(totalPages, Math.floor(query.skip / limit) + 1);
+
+  function goToPage(page: number) {
+    loadProducts({ ...query, skip: (page - 1) * limit });
   }
 
   useEffect(() => {
@@ -52,36 +82,42 @@ export default function ProductExplorer() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-10">
-      <header className="mb-8">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
-            <Package className="w-7 h-7" />
+      <header className="mb-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-blue-600 text-white">
+            <Package className="w-8 h-8" />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
               Product Explorer
             </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm">
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-0.5">
               ระบบจัดการและค้นหารายการสินค้า
             </p>
           </div>
         </div>
       </header>
 
-      {/* แบบฟอร์มเพิ่ม/แก้ไขสินค้า */}
-      <ProductForm editing={null} onSave={saveProduct} onCancel={() => {}} />
 
-      {/* ฟอร์มค้นหาและตัวกรอง */}
-      <ProductSearchForm onSearch={loadProducts} />
+      <ProductForm
+        key={editing ? `edit-${editing.id}` : "new"}
+        editing={editing}
+        onSave={saveProduct}
+        onCancel={() => setEditing(null)}
+      />
 
-      {/* ส่วนหัวตารางและปุ่มโหลดข้อมูล */}
+      <ProductSearchForm
+        defaultValues={query}
+        onSearch={(values) => loadProducts({ ...values, skip: 0 })}
+      />
+
       <div className="flex items-center justify-between mt-10 mb-4">
         <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
           รายการสินค้า
         </h2>
         <button
           type="button"
-          onClick={() => loadProducts(defaultQuery)}
+          onClick={() => loadProducts(query)}
           disabled={status === "loading"}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition disabled:opacity-50 shadow-sm"
         >
@@ -124,24 +160,24 @@ export default function ProductExplorer() {
         {status === "ready" && products.length > 0 && (
           <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm bg-white dark:bg-zinc-900">
             <table className="w-full text-left text-sm text-zinc-600 dark:text-zinc-300">
-              <thead className="bg-zinc-50 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-200 font-semibold border-b border-zinc-200 dark:border-zinc-800">
+              <thead className="bg-zinc-50 dark:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400 font-medium border-b border-zinc-200 dark:border-zinc-800">
                 <tr>
-                  <th className="py-3.5 px-4">รูปสินค้า</th>
-                  <th className="py-3.5 px-4">รหัส</th>
-                  <th className="py-3.5 px-4">ชื่อสินค้า</th>
-                  <th className="py-3.5 px-4">ราคา</th>
-                  <th className="py-3.5 px-4">คงเหลือ</th>
-                  <th className="py-3.5 px-4">หมวดหมู่</th>
+                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">รูปสินค้า</th>
+                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">รหัส</th>
+                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">ชื่อสินค้า</th>
+                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">ราคา</th>
+                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">คงเหลือ</th>
+                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">หมวดหมู่</th>
+                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">จัดการ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
                 {products.map((item) => (
                   <tr
                     key={item.id}
-                    className="hover:bg-zinc-50/70 dark:hover:bg-zinc-800/40 transition"
+                    className="hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors"
                   >
-                    <td className="py-3 px-4">
-                      <div className="w-16 h-16 relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center">
+                    <td className="py-3 px-4">                        <div className="w-16 h-16 relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-1 ring-zinc-200 dark:ring-zinc-700 flex items-center justify-center">
                         <Image
                           src={item.thumbnail ?? "/placeholder.png"}
                           alt={item.title}
@@ -172,16 +208,72 @@ export default function ProductExplorer() {
                         {item.stock} ชิ้น
                       </span>
                     </td>
+                    <td className="py-3 px-4">                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+                          {item.category}
+                        </span>
+                    </td>
                     <td className="py-3 px-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
-                        {item.category}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditing(item);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 transition-colors"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        <span>แก้ไข</span>
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        )}
+        {status === "ready" && total > 0 && (
+          <nav
+            aria-label="แบ่งหน้า"
+            className="flex flex-wrap items-center justify-center gap-2 mt-6"
+          >
+            <button
+              type="button"
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage <= 1}
+              className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span>ก่อนหน้า</span>
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                type="button"
+                onClick={() => goToPage(page)}
+                disabled={page === currentPage}
+                aria-current={page === currentPage ? "page" : undefined}
+                className={
+                  page === currentPage
+                    ? "min-w-9 px-3 py-1.5 rounded-full text-sm font-semibold bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900"
+                    : "min-w-9 px-3 py-1.5 rounded-full text-sm font-medium text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition"
+                }
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+              className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <span>ถัดไป</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            <p className="w-full text-center text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              หน้า {currentPage} จาก {totalPages} · ทั้งหมด {total} รายการ
+            </p>
+          </nav>
         )}
       </section>
     </main>

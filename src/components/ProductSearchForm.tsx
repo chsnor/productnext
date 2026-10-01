@@ -3,16 +3,17 @@ import {
   SORT_FIELDS,
   SearchQuery,
   SearchQuerySchema,
-  defaultQuery,
 } from "src/lib/products";
 import { useForm } from "react-hook-form";
 import { Search } from "lucide-react";
 
 type ProductSearchFormProps = {
+  defaultValues: SearchQuery;
   onSearch: (query: SearchQuery) => Promise<void>;
 };
 
 export default function ProductSearchForm({
+  defaultValues,
   onSearch,
 }: ProductSearchFormProps) {
   const {
@@ -22,7 +23,7 @@ export default function ProductSearchForm({
   } = useForm<SearchQuery>({
     resolver: zodResolver(SearchQuerySchema),
     mode: "onTouched",
-    defaultValues: defaultQuery,
+    defaultValues,
   });
 
   return (
@@ -31,6 +32,32 @@ export default function ProductSearchForm({
       noValidate
       className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm mb-6 max-w-2xl flex flex-wrap items-end gap-4"
     >
+      <div className="flex-1 min-w-[160px]">
+        <label
+          htmlFor="q"
+          className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5 uppercase tracking-wider"
+        >
+          คำค้นหา
+        </label>
+        <input
+          id="q"
+          {...register("q")}
+          aria-invalid={!!errors.q}
+          aria-describedby="q-error"
+          placeholder="ค้นหาชื่อสินค้า..."
+          className="w-full px-3.5 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 text-sm transition"
+        />
+        {errors.q && (
+          <span
+            id="q-error"
+            role="alert"
+            className="text-red-500 dark:text-red-400 text-xs mt-1 block"
+          >
+            {errors.q?.message}
+          </span>
+        )}
+      </div>
+
       <div className="flex-1 min-w-[140px]">
         <label
           htmlFor="limit"
@@ -45,7 +72,7 @@ export default function ProductSearchForm({
           {...register("limit", { valueAsNumber: true })}
           aria-invalid={!!errors.limit}
           aria-describedby="limit-error"
-          className="w-full px-3.5 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"
+          className="w-full px-3.5 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 text-sm transition"
         />
         {errors.limit && (
           <span
@@ -68,7 +95,7 @@ export default function ProductSearchForm({
         <select
           id="sortBy"
           {...register("sortBy")}
-          className="w-full px-3.5 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"
+          className="w-full px-3.5 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 text-sm transition"
         >
           {SORT_FIELDS.map((field) => (
             <option

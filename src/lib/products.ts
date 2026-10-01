@@ -27,7 +27,7 @@ export const CATEGORIES = [
   "womens-shoes",
   "womens-watches",
 ] as const;
-export const ProductSchema = z.object({
+const ProductSchema = z.object({
   id: z.number(),
   // เติม: เงื:อนไขที:บังคับว่าข้อความต้องยาวอย่างน้อยเท่าใด
   title: z.string().trim().min(1, "กรุณากรอกชือสินค้า"),
@@ -40,7 +40,7 @@ export const ProductSchema = z.object({
   description: z.string().trim().optional(),
   thumbnail: z.string().url("รูปภาพไม่ถูกต้อง").optional(),
 });
-export const ProductListSchema = z.object({
+const ProductListSchema = z.object({
   products: z.array(ProductSchema),
   total: z.number(),
   skip: z.number(),
@@ -56,6 +56,10 @@ const API_BASE = "https://dummyjson.com";
 export const SORT_FIELDS = ["title", "price", "stock"] as const;
 export const SearchQuerySchema = z.object({
   q: z.string().trim(),
+  skip: z
+    .number({ error: "กรุณากรอกจำนวนข้าม" })
+    .int("จำนวนข้ามต้องเป็นจำนวนเต็ม")
+    .min(0, "จำนวนข้ามต้องไม่ติดลบ"),
   limit: z
     .number({ error: "กรุณากรอกจํานวนรายการ" })
     .int("จํานวนรายการต้องเป็นจํานวนเต็ม")
@@ -67,12 +71,14 @@ export const SearchQuerySchema = z.object({
 export type SearchQuery = z.infer<typeof SearchQuerySchema>;
 export const defaultQuery: SearchQuery = {
   q: "",
+  skip: 0,
   limit: 10,
   sortBy: "title",
 };
-export function buildProductUrl(query: SearchQuery): string {
+function buildProductUrl(query: SearchQuery): string {
   const params = new URLSearchParams();
   params.set("q", query.q);
+  params.set("skip", String(query.skip));
   // เติม: เมธอดที:กําหนดค่าให้พารามิเตอร์หนึ:งตัว
   params.set("limit", String(query.limit));
   params.set("sortBy", query.sortBy);
