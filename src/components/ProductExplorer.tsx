@@ -81,23 +81,20 @@ export default function ProductExplorer() {
   }, []);
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-10">
-      <header className="mb-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-2xl bg-blue-600 text-white">
-            <Package className="w-8 h-8" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-              Product Explorer
-            </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-0.5">
-              ระบบจัดการและค้นหารายการสินค้า
-            </p>
-          </div>
+    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <header className="mb-8 flex items-center gap-4">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+          <Package className="h-5 w-5" strokeWidth={1.75} />
+        </div>
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+            Product Explorer
+          </h1>
+          <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
+            ระบบจัดการและค้นหารายการสินค้า
+          </p>
         </div>
       </header>
-
 
       <ProductForm
         key={editing ? `edit-${editing.id}` : "new"}
@@ -111,117 +108,130 @@ export default function ProductExplorer() {
         onSearch={(values) => loadProducts({ ...values, skip: 0 })}
       />
 
-      <div className="flex items-center justify-between mt-10 mb-4">
-        <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h2 className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
           รายการสินค้า
         </h2>
         <button
           type="button"
           onClick={() => loadProducts(query)}
           disabled={status === "loading"}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition disabled:opacity-50 shadow-sm"
+          className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
         >
           {status === "loading" ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />
+              <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />
               <span>กำลังโหลด...</span>
             </>
           ) : (
             <>
-              <RefreshCw className="w-4 h-4 text-zinc-500" />
+              <RefreshCw className="h-4 w-4 text-zinc-400" />
               <span>โหลดข้อมูล</span>
             </>
           )}
         </button>
       </div>
 
-      {/* ผลลัพธ์และตารางสินค้า */}
       <section aria-live="polite">
         {status === "loading" && (
-          <div className="p-12 text-center text-blue-500 font-medium flex flex-col items-center justify-center gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+          <div className="flex flex-col items-center justify-center gap-3 p-12 text-sm font-medium text-zinc-500">
+            <Loader2 className="h-7 w-7 animate-spin text-zinc-400" />
             <p>กำลังโหลดข้อมูลสินค้า...</p>
           </div>
         )}
         {status === "error" && (
           <div
             role="alert"
-            className="p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-sm flex items-center gap-2"
+            className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50/70 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400"
           >
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
         {status === "ready" && products.length === 0 && (
-          <div className="p-8 text-center text-zinc-500 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800">
+          <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50/50 p-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-400">
             ไม่พบสินค้าที่ตรงกับเงื่อนไข
           </div>
         )}
         {status === "ready" && products.length > 0 && (
-          <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm bg-white dark:bg-zinc-900">
+          <div className="overflow-x-auto rounded-lg border border-zinc-200/80 bg-white dark:border-zinc-800/80 dark:bg-zinc-900">
             <table className="w-full text-left text-sm text-zinc-600 dark:text-zinc-300">
-              <thead className="bg-zinc-50 dark:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400 font-medium border-b border-zinc-200 dark:border-zinc-800">
+              <thead className="border-b border-zinc-200/80 bg-zinc-50/60 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:border-zinc-800/80 dark:bg-zinc-800/40 dark:text-zinc-400">
                 <tr>
-                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">รูปสินค้า</th>
-                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">รหัส</th>
-                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">ชื่อสินค้า</th>
-                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">ราคา</th>
-                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">คงเหลือ</th>
-                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">หมวดหมู่</th>
-                  <th className="py-3.5 px-4 uppercase text-xs tracking-wider">จัดการ</th>
+                  <th scope="col" className="px-4 py-3">
+                    รูปสินค้า
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    รหัส
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    ชื่อสินค้า
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    ราคา
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    คงเหลือ
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    หมวดหมู่
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    จัดการ
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              <tbody className="divide-y divide-zinc-200/60 dark:divide-zinc-800/60">
                 {products.map((item) => (
                   <tr
                     key={item.id}
-                    className="hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors"
+                    className="transition-colors hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30"
                   >
-                    <td className="py-3 px-4">                        <div className="w-16 h-16 relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-1 ring-zinc-200 dark:ring-zinc-700 flex items-center justify-center">
+                    <td className="px-4 py-3">
+                      <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-md bg-zinc-100 ring-1 ring-zinc-200/80 dark:bg-zinc-800 dark:ring-zinc-700/60">
                         <Image
                           src={item.thumbnail ?? "/placeholder.png"}
                           alt={item.title}
-                          width={64}
-                          height={64}
-                          className="object-cover w-full h-full"
+                          width={44}
+                          height={44}
+                          className="h-full w-full object-cover"
                           unoptimized
                         />
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-xs font-mono text-zinc-400">
+                    <td className="px-4 py-3 font-mono text-xs text-zinc-400 dark:text-zinc-500">
                       #{item.id}
                     </td>
-                    <td className="py-3 px-4 font-medium text-zinc-900 dark:text-white">
+                    <td className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
                       {item.title}
                     </td>
-                    <td className="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-semibold">
+                    <td className="px-4 py-3 font-medium tabular-nums text-zinc-900 dark:text-zinc-100">
                       ฿{Number(item.price).toLocaleString()}
                     </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          item.stock > 10
-                            ? "bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-300"
-                            : "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
-                        }`}
-                      >
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center gap-2 tabular-nums text-zinc-700 dark:text-zinc-300">
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full ${
+                            item.stock > 10 ? "bg-emerald-500" : "bg-amber-500"
+                          }`}
+                          aria-hidden
+                        />
                         {item.stock} ชิ้น
                       </span>
                     </td>
-                    <td className="py-3 px-4">                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
-                          {item.category}
-                        </span>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                      {item.category}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="px-4 py-3">
                       <button
                         type="button"
                         onClick={() => {
                           setEditing(item);
                           window.scrollTo({ top: 0, behavior: "smooth" });
                         }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 transition-colors"
+                        className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
                       >
-                        <Pencil className="w-3.5 h-3.5" />
+                        <Pencil className="h-3.5 w-3.5" />
                         <span>แก้ไข</span>
                       </button>
                     </td>
@@ -234,15 +244,15 @@ export default function ProductExplorer() {
         {status === "ready" && total > 0 && (
           <nav
             aria-label="แบ่งหน้า"
-            className="flex flex-wrap items-center justify-center gap-2 mt-6"
+            className="mt-6 flex flex-wrap items-center justify-center gap-1.5"
           >
             <button
               type="button"
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage <= 1}
-              className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-3.5 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="h-4 w-4" />
               <span>ก่อนหน้า</span>
             </button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -254,8 +264,8 @@ export default function ProductExplorer() {
                 aria-current={page === currentPage ? "page" : undefined}
                 className={
                   page === currentPage
-                    ? "min-w-9 px-3 py-1.5 rounded-full text-sm font-semibold bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900"
-                    : "min-w-9 px-3 py-1.5 rounded-full text-sm font-medium text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition"
+                    ? "min-w-9 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900"
+                    : "min-w-9 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
                 }
               >
                 {page}
@@ -265,12 +275,12 @@ export default function ProductExplorer() {
               type="button"
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage >= totalPages}
-              className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-3.5 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
             >
               <span>ถัดไป</span>
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="h-4 w-4" />
             </button>
-            <p className="w-full text-center text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="mt-1 w-full text-center text-xs text-zinc-500 dark:text-zinc-400">
               หน้า {currentPage} จาก {totalPages} · ทั้งหมด {total} รายการ
             </p>
           </nav>
