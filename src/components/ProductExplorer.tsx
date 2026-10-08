@@ -22,7 +22,11 @@ import {
 
 type LoadState = "loading" | "error" | "ready";
 
-export default function ProductExplorer() {
+type ProductExplorerProps = {
+  isLoggedIn?: boolean;
+};
+
+export default function ProductExplorer({ isLoggedIn = false }: ProductExplorerProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [status, setStatus] = useState<LoadState>("loading");
   const [errorMessage, setErrorMessage] = useState("");
@@ -96,17 +100,26 @@ export default function ProductExplorer() {
         </div>
       </header>
 
-      <ProductForm
-        key={editing ? `edit-${editing.id}` : "new"}
-        editing={editing}
-        onSave={saveProduct}
-        onCancel={() => setEditing(null)}
-      />
+      {isLoggedIn ? (
+        <ProductForm
+          key={editing ? `edit-${editing.id}` : "new"}
+          editing={editing}
+          onSave={saveProduct}
+          onCancel={() => setEditing(null)}
+        />
+      ) : (
+        <div className="mb-6 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/50 p-4 text-center">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            🔒 กรุณาเข้าสู่ระบบด้วย Google เพื่อเพิ่มหรือแก้ไขสินค้า
+          </p>
+        </div>
+      )}
 
       <ProductSearchForm
         defaultValues={query}
         onSearch={(values) => loadProducts({ ...values, skip: 0 })}
       />
+
 
       <div className="mb-4 flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
@@ -223,18 +236,25 @@ export default function ProductExplorer() {
                       {item.category}
                     </td>
                     <td className="px-4 py-3">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditing(item);
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                        }}
-                        className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                        <span>แก้ไข</span>
-                      </button>
+                      {isLoggedIn ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditing(item);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          <span>แก้ไข</span>
+                        </button>
+                      ) : (
+                        <span className="text-xs text-zinc-400">
+                          ต้องเข้าสู่ระบบ
+                        </span>
+                      )}
                     </td>
+
                   </tr>
                 ))}
               </tbody>

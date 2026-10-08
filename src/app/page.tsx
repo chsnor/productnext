@@ -25,7 +25,7 @@ export default async function Home() {
         </div>
       </header>
 
-      <ProductExplorer />
+      <ProductExplorer isLoggedIn={isLoggedIn} />
     </div>
   );
 }
